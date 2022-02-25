@@ -1,3 +1,37 @@
+* {
+  box-sizing: border-box;
+  font-size: 1em;
+  background: WhiteSmoke;
+  margin: 1.2rem;
+}
+
 #root {
   color: red;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: black;
+  margin-top: 4rem;
+}
+
+.hide {
+  display: none;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-color: white;
+  padding: 1rem;
+  margin-top: 4rem;
+  text-align: center;
+}
+
+form {
+  position: absolute;
+  top: 0;
+  left: 3.5%;
+  display: flex;
+}
+
+img {
+  max-width: 100%;
 }
