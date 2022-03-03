@@ -9,18 +9,19 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    
     <form id="search-form" action="">
       <input
         id="input-search"
         type="search"
         placeholder="Enter your search here...."
       />
+      <select id="episode-select"></select>
+      <select id="shows-select"></select>
       <p id="episode-count"></p>
     </form>
-
+    <div id="showsView"></div>
     <div id="root"></div>
-
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <script src="episodes.js"></script>
 
