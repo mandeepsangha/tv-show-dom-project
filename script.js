@@ -1,7 +1,12 @@
 //You can edit ALL of the code here
+
+const API_URL = "https://api.tvmaze.com/shows/527/episodes "; //returns object with episode data
+
 function setup() {
-  const allEpisodes = getAllEpisodes(); // this gives an array
-  makePageForEpisodes(allEpisodes);
+  // const allEpisodes = getAllEpisodes(); // this gives an array
+  // makePageForEpisodes(allEpisodes);
+
+  getEpisodes(API_URL); //calls the getEpisodes function passing in API URL
 
   //searchbar box
   const searchBar = document.getElementById("input-search");
@@ -67,8 +72,7 @@ function populateSelectEpisodeBar(episodeList) {
 //event handler on change for select episodes, reset after 5 seconds back to full list
 
 function handleChangeEpisodeOption(e) {
-  const allEpisodes2 = getAllEpisodes();
-  console.log(e.target.value);
+  const allEpisodes2 = allEpisodes;
   if (e.target.value == "") {
     makePageForEpisodes(allEpisodes2);
   } else {
@@ -83,5 +87,14 @@ function handleChangeEpisodeOption(e) {
 }
 
 select_episode.addEventListener("change", handleChangeEpisodeOption);
+
+//using fetch() to make GET request from URL
+
+async function getEpisodes(url) {
+  const res = await fetch(url); //instead of doing .then
+  allEpisodes = await res.json(); //uses .json() method to convert response to JSON
+  populateSelectEpisodeBar(allEpisodes); //create dropdown for episodes
+  makePageForEpisodes(allEpisodes); //runs make Pages
+}
 
 window.onload = setup;
