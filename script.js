@@ -1,6 +1,8 @@
 //You can edit ALL of the code here
 
 const API_URL = "https://api.tvmaze.com/shows/527/episodes "; //returns object with episode data
+//const showsView = document.getElementById("showsView");
+//const select_show = document.getElementById("shows-select");
 
 function setup() {
   // const allEpisodes = getAllEpisodes(); // this gives an array
@@ -25,6 +27,23 @@ function setup() {
         );
       })
     );
+  });
+
+  //This function add an EventListener on show change to fetch the episodes list of that selected show.
+  select_show.addEventListener("change", (e) => {
+    e.preventDefault();
+    let showId = e.currentTarget.value;
+
+    async function displayEpisodesList() {
+      const response = await fetch(
+        `https://api.tvmaze.com/shows/${showId}/episodes`
+      );
+      allEpisodes = await response.json();
+      select_episode.innerHTML = populateSelectEpisodeBar(allEpisodes);
+      makePageForEpisodes(allEpisodes);
+    }
+
+    displayEpisodesList();
   });
 }
 
@@ -96,5 +115,23 @@ async function getEpisodes(url) {
   populateSelectEpisodeBar(allEpisodes); //create dropdown for episodes
   makePageForEpisodes(allEpisodes); //runs make Pages
 }
+
+async function displayShowList() {
+  const response = await fetch("https://api.tvmaze.com/shows");
+  const allShowsList = await response.json();
+  select_show.innerHTML = populateShows(allShowsList);
+}
+
+// The function populate the show bar
+
+function populateShows(shows) {
+  let selected_show = "";
+  for (let i = 0; i < shows.length; i++) {
+    selected_show += `<option value = "${shows[i].id}">${shows[i].name}</option>`;
+  }
+  return selected_show;
+}
+
+displayShowList();
 
 window.onload = setup;
