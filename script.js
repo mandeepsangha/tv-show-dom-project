@@ -1,24 +1,27 @@
-const API_URL = "https://api.tvmaze.com/shows/527/episodes "; //returns object with episode data
 const backToShowBtn = document.getElementById("backtoshows");
 backToShowBtn.style.display = "none";
+const showsView = document.getElementById("showsView");
+
+//searchbar box
+const searchBar = document.getElementById("input-search");
 
 function setup() {
-  // const allEpisodes = getAllEpisodes(); // this gives an array
-  // makePageForEpisodes(allEpisodes);
   displayShowList();
-  let allEpisodes = getAllShows();
-  makePageForEpisodes(allEpisodes);
-  // getEpisodes(API_URL); //calls the getEpisodes function passing in API URL
+  let allEpisodes = getAllShows().sort((a, b) =>
+    a.name.toUpperCase() > b.name.toUpperCase()
+      ? 1
+      : b.name.toUpperCase() > a.name.toUpperCase()
+      ? -1
+      : 0
+  );
+  makePageForShows(allEpisodes);
 
   const shows = document.querySelectorAll(".show");
   backToShowBtn.addEventListener("click", () => {
-    showsView.style.display = "block";
-    episodesView.style.display = "none";
+    // showsView.style.display = "block";
+    // episodesView.style.display = "none";
     backToShowBtn.style.display = "none";
   });
-
-  //searchbar box
-  const searchBar = document.getElementById("input-search");
 
   //add event listener on key up
   searchBar.addEventListener("keyup", (e) => {
@@ -55,9 +58,7 @@ function setup() {
   });
 }
 
-const showsView = document.getElementById("showsView");
-
-function makePageForEpisodes(episodeList) {
+function makePageForShows(episodeList) {
   const episode_count = document.getElementById("episode-count");
   const rootElem = document.getElementById("root");
 
@@ -79,17 +80,37 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
-// loop through the episodeList to create each episode card .
-//  episodeList.forEach((episode) => {
-//   rootElem.innerHTML += `<div class = "card">
-//    <h1> ${episode.name} - S${
-//     episode.season < 10 ? "0" + episode.season : episode.season
-//   }E${episode.number < 10 ? "0" + episode.number : episode.number}</h1>
-//    <img src= ${episode.image.medium}>
-//    ${episode.summary}
-//    </div>`;
-// });
+function makePageForEpisodes(episodeList) {
+  const episode_count = document.getElementById("episode-count");
+  const rootElem = document.getElementById("root");
 
+  // empty rootElem content to clear the page.
+  rootElem.textContent = "";
+  episode_count.textContent = `Got ${episodeList.length} episode(s)`;
+
+  // populateSelectEpisodeBar(episodeList);
+  // loop through the episodeList to create each episode card .
+  // episodeList.forEach((episode) => {
+  //   rootElem.innerHTML += `<div class = "card">
+  //    <h1> ${episode.name}</h1>
+  //    <img src= ${episode.image.medium}>
+  //    <div> rated: ${episode.rating.average} <br> runtime: ${episode.runtime} <br> status: ${episode.status}</div>
+  //         </div>
+
+  //    </div>`;
+  // });
+
+  // loop through the episodeList to create each episode card .
+  episodeList.forEach((episode) => {
+    rootElem.innerHTML += `<div class = "card">
+   <h1> ${episode.name} - S${
+      episode.season < 10 ? "0" + episode.season : episode.season
+    }E${episode.number < 10 ? "0" + episode.number : episode.number}</h1>
+   <img src= ${episode.image.medium}>
+   ${episode.summary}
+   </div>`;
+  });
+}
 // drop down menu for episode and show selection
 
 const select_episode = document.getElementById("episode-select");
@@ -124,39 +145,22 @@ function handleChangeEpisodeOption(e) {
   }
 }
 
-function handleChangeShowOption(e) {
-  const allEpisodes2 = allEpisodes;
-  if (e.target.value == "") {
-    makePageForEpisodes(allEpisodes2);
-  } else {
-    let filteredEpisode = allEpisodes2.filter(
-      (episode) => e.target.value == episode.id
-    );
-    makePageForEpisodes(filteredEpisode);
-    setTimeout(() => {
-      makePageForEpisodes(allEpisodes2);
-    }, 5000);
-  }
-}
-
 select_episode.addEventListener("change", handleChangeEpisodeOption);
-select_show.addEventListener("change", handleChangeShowOption);
 
-//using fetch() to make GET request from URL
+//using async function to make GET request from URL
 
 async function getEpisodes(url) {
   const res = await fetch(url); //instead of doing .then
   allEpisodes = await res.json(); //uses .json() method to convert response to JSON
   populateSelectEpisodeBar(allEpisodes); //create dropdown for episodes
-  makePageForEpisodes(allEpisodes); //runs make Pages
+  makePageForShows(allEpisodes); //runs make Pages
 }
 
 async function displayShowList() {
   const response = await fetch("https://api.tvmaze.com/shows"); //instead of doing .then
   const allShowsList = await response.json(); //uses .json() method to convert response to JSON
   select_show.innerHTML =
-    `<option value="" disabled selected>Select a show ...</option>` +
-    populateShows(allShowsList);
+    `<option value="">All shows</option>` + populateShows(allShowsList);
 }
 
 // The function populate the show bar
@@ -201,7 +205,7 @@ function populateEpisodes(episodeList) {
 //addEventListener to fetch episode list on show change
 select_show.addEventListener("change", (e) => {
   e.preventDefault();
-
+  backToShowBtn.style.display = "block";
   let showId = e.currentTarget.value;
 
   async function displayEpisodesList() {
