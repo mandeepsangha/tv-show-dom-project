@@ -4,6 +4,7 @@ const showsView = document.getElementById("showsView");
 
 //searchbar box
 const searchBar = document.getElementById("input-search");
+const searchShows = document.getElementById("input-shows");
 
 function setup() {
   displayShowList();
@@ -23,12 +24,26 @@ function setup() {
     backToShowBtn.style.display = "none";
   });
 
-  //add event listener on key up
-  searchBar.addEventListener("keyup", (e) => {
+  //add event listener on key up to Show Search
+  searchShows.addEventListener("keyup", (e) => {
     e.preventDefault();
 
     let filterValue = e.target.value.toLowerCase();
+    makePageForEpisodes(
+      allEpisodes.filter((episode) => {
+        return (
+          episode.name.toLowerCase().indexOf(filterValue) != -1 ||
+          episode.summary.toLowerCase().indexOf(filterValue) != -1 ||
+          episode.genres.join(" ").toLowerCase().includes(filterValue)
+        );
+      })
+    );
+  });
 
+  //add event listener on key up to Episode Search
+  searchBar.addEventListener("keyup", (e) => {
+    e.preventDefault();
+    let filterValue = e.target.value.toLowerCase();
     makePageForEpisodes(
       allEpisodes.filter((episode) => {
         return (
@@ -66,17 +81,27 @@ function makePageForShows(episodeList) {
   rootElem.textContent = "";
   episode_count.textContent = `Got ${episodeList.length} episode(s)`;
 
-  // populateSelectEpisodeBar(episodeList);
-
   // loop through the episodeList to create each episode card .
   episodeList.forEach((episode) => {
-    rootElem.innerHTML += `<div class = "card">
+    if (episode.image) {
+      rootElem.innerHTML += `<div class = "card">
      <h1> ${episode.name}</h1>
+     
      <img src= ${episode.image.medium}>
+     
      <div> rated: ${episode.rating.average} <br> runtime: ${episode.runtime} <br> status: ${episode.status}</div>
           </div>
        
      </div>`;
+    } else {
+      rootElem.innerHTML += `<div class = "card">
+     <h1> ${episode.name}</h1>
+     
+     <div> rated: ${episode.rating.average} <br> runtime: ${episode.runtime} <br> status: ${episode.status}</div>
+          </div>
+       
+     </div>`;
+    }
   });
 }
 
@@ -88,27 +113,25 @@ function makePageForEpisodes(episodeList) {
   rootElem.textContent = "";
   episode_count.textContent = `Got ${episodeList.length} episode(s)`;
 
-  // populateSelectEpisodeBar(episodeList);
-  // loop through the episodeList to create each episode card .
-  // episodeList.forEach((episode) => {
-  //   rootElem.innerHTML += `<div class = "card">
-  //    <h1> ${episode.name}</h1>
-  //    <img src= ${episode.image.medium}>
-  //    <div> rated: ${episode.rating.average} <br> runtime: ${episode.runtime} <br> status: ${episode.status}</div>
-  //         </div>
-
-  //    </div>`;
-  // });
-
   // loop through the episodeList to create each episode card .
   episodeList.forEach((episode) => {
-    rootElem.innerHTML += `<div class = "card">
+    if (episode.image) {
+      rootElem.innerHTML += `<div class = "card">
    <h1> ${episode.name} - S${
-      episode.season < 10 ? "0" + episode.season : episode.season
-    }E${episode.number < 10 ? "0" + episode.number : episode.number}</h1>
+        episode.season < 10 ? "0" + episode.season : episode.season
+      }E${episode.number < 10 ? "0" + episode.number : episode.number}</h1>
    <img src= ${episode.image.medium}>
    ${episode.summary}
    </div>`;
+    } else {
+      rootElem.innerHTML += `<div class = "card">
+   <h1> ${episode.name} - S${
+        episode.season < 10 ? "0" + episode.season : episode.season
+      }E${episode.number < 10 ? "0" + episode.number : episode.number}</h1>
+   
+   ${episode.summary}
+   </div>`;
+    }
   });
 }
 // drop down menu for episode and show selection
